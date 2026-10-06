@@ -1,6 +1,20 @@
 import Foundation
 import AppKit
 
+/// 测试用的图库目录。用环境变量 `RAFHIF_TEST_DIR` 指定，**不写死路径** ——
+/// 免得把开发者本机的目录结构带进公开仓库。
+func testLibraryDir() -> URL {
+    let env = ProcessInfo.processInfo.environment["RAFHIF_TEST_DIR"]
+    guard let p = env, !p.isEmpty else {
+        FileHandle.standardError.write(
+            "请先设置环境变量 RAFHIF_TEST_DIR 指向含有 RAF/HIF 文件的目录\n"
+                .data(using: .utf8)!)
+        exit(1)
+    }
+    return URL(fileURLWithPath: p)
+}
+
+
 // 验证默认值，以及"按模式只解码需要的一侧"这个优化是否真的生效。
 // 用软链接指向卡上的真实文件，避免复制 85 MB。
 //
@@ -37,8 +51,9 @@ struct DefaultsTest {
         let day = root.appendingPathComponent("2026-09-29")
         try! fm.createDirectory(at: day, withIntermediateDirectories: true)
 
-        let src = URL(fileURLWithPath: "__TEST_DIR__")
-        for n in ["DSCF0001.RAF", "DSCF0001.HIF"] {
+        let src = testLibraryDir()
+        let stem = ProcessInfo.processInfo.environment["RAFHIF_TEST_STEM"] ?? "DSCF0001"
+        for n in ["\(stem).RAF", "\(stem).HIF"] {
             try! fm.createSymbolicLink(at: day.appendingPathComponent(n),
                                        withDestinationURL: src.appendingPathComponent(n))
         }

@@ -3,6 +3,20 @@ import CoreGraphics
 import Foundation
 import ImageIO
 
+/// 测试用的图库目录。用环境变量 `RAFHIF_TEST_DIR` 指定，**不写死路径** ——
+/// 免得把开发者本机的目录结构带进公开仓库。
+func testLibraryDir() -> URL {
+    let env = ProcessInfo.processInfo.environment["RAFHIF_TEST_DIR"]
+    guard let p = env, !p.isEmpty else {
+        FileHandle.standardError.write(
+            "请先设置环境变量 RAFHIF_TEST_DIR 指向含有 RAF/HIF 文件的目录\n"
+                .data(using: .utf8)!)
+        exit(1)
+    }
+    return URL(fileURLWithPath: p)
+}
+
+
 // 离屏渲染验证工具：把真实的 CanvasNSView 画进位图，
 // 用于检查适应窗口 / 缩放 / 平移的几何是否正确。
 
@@ -32,7 +46,7 @@ func render(view: NSView, size: CGSize, to url: URL) {
 @main
 struct Harness {
     static func main() {
-        let dir = "__TEST_DIR__"
+        let dir = testLibraryDir().path
         let stem = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "DSCF0001"
         let outDir = URL(fileURLWithPath: "/tmp/shots")
         try? FileManager.default.createDirectory(at: outDir, withIntermediateDirectories: true)

@@ -171,7 +171,19 @@ for attempt in 1 2 3; do
   echo "    ✅ 布局已设好（背景图 + 图标位置）"
 
   # ② 抢在 Finder 回写之前把好的 .DS_Store 存出来
+  #
+  # 然后**必须清理**：Finder 会把卷的别名信息写进 .DS_Store，里面带着
+  # 构建机上的绝对路径（用户名、目录结构）。实测发布出去的 DMG 里就有
+  #   /Volumes/<盘>/<用户名>/Documents/.../build/dmg-rw.dmg
+  # 清理用等长替换，不动其它字节，所以二进制结构不受影响；
+  # 背景图那条别名用的是卷内相对路径，不会被误伤。
   cp "$MOUNT/.DS_Store" "$SAVED"
+  PY="$ROOT/../dsh-runtimes/dsh-primary-runtime/dependencies/python/bin/python3"
+  if [ -x "$PY" ]; then
+    "$PY" "$ROOT/Tools/sanitize-dsstore.py" "$SAVED" "dmg-rw" | sed 's/^/    /'
+  else
+    python3 "$ROOT/Tools/sanitize-dsstore.py" "$SAVED" "dmg-rw" | sed 's/^/    /' || true
+  fi
   hdiutil detach "$MOUNT" >/dev/null 2>&1 || hdiutil detach "$MOUNT" -force >/dev/null 2>&1
   sleep 2
 
@@ -205,6 +217,12 @@ for attempt in 1 2 3; do
     || { echo "    ⚠️ 成品里背景图丢了"; ok=0; }
   strings "$MOUNT/.DS_Store" 2>/dev/null | grep -q 'Iloc' \
     || { echo "    ⚠️ 成品里图标位置丢了"; ok=0; }
+  # 隐私复查：成品里不能残留构建机路径
+  if strings "$MOUNT/.DS_Store" 2>/dev/null | grep -qE "$(whoami)|$(echo "$ROOT" | sed 's|/|\\/|g')"; then
+    echo "    ❌ 成品 .DS_Store 里仍残留构建机路径"; ok=0
+  else
+    echo "    ✅ .DS_Store 已清理，无构建机路径"
+  fi
   hdiutil detach "$MOUNT" -force >/dev/null 2>&1
 
   if [ "$ok" = 1 ]; then
