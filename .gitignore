@@ -1,0 +1,23 @@
+# 构建产物
+build/
+*.dmg
+*.o
+*.dSYM/
+
+# 测试与调试用的临时文件
+Tools/__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+._*
+
+# Xcode（本工程不用 Xcode，但以防万一）
+xcuserdata/
+*.xcuserstate
+
+# 会话交接记录（含个人路径与图库信息，不随源码发布）
+PROJECT-NOTES.md
+
+# 开发过程中的验证截图（体积大，且对使用者价值不大）
+docs/
