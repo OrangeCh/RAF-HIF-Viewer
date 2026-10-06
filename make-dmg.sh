@@ -28,6 +28,8 @@ cp -R "$APP" "$STAGE/"
 ln -s /Applications "$STAGE/Applications"
 cp "$ROOT/Resources/dmg/background.png"    "$STAGE/.background/"
 cp "$ROOT/Resources/dmg/background@2x.png" "$STAGE/.background/"
+# MIT 许可要求分发二进制时附带版权声明，所以放进安装包里
+cp "$ROOT/LICENSE" "$STAGE/LICENSE.txt"
 
 if [ ! -d "$STAGE/$APPNAME.app" ]; then
   echo "❌ App 未正确拷入暂存目录：$STAGE"
@@ -90,7 +92,8 @@ tell application "Finder"
         set icon size of opts to 104
         set position of item "$APPNAME.app" of container window to {170, 200}
         set position of item "Applications" of container window to {490, 200}
-        set position of item "首次打开请先读我.txt" of container window to {330, 352}
+        set position of item "首次打开请先读我.txt" of container window to {245, 352}
+        set position of item "LICENSE.txt" of container window to {425, 352}
         update without registering applications
         delay 1
     end tell
@@ -213,6 +216,7 @@ for attempt in 1 2 3; do
   sleep 3
   ok=1
   [ -d "$MOUNT/$APPNAME.app" ] || { echo "    ⚠️ 成品里没有 App"; ok=0; }
+  [ -f "$MOUNT/LICENSE.txt" ] || { echo "    ⚠️ 成品里没有许可证"; ok=0; }
   strings "$MOUNT/.DS_Store" 2>/dev/null | grep -q backgroundImageAlias \
     || { echo "    ⚠️ 成品里背景图丢了"; ok=0; }
   strings "$MOUNT/.DS_Store" 2>/dev/null | grep -q 'Iloc' \

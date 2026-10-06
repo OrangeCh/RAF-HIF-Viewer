@@ -1,5 +1,8 @@
 # RAF-HIF 对照查看器
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-macOS%2014%2B%20arm64-lightgrey.svg)](#系统要求)
+
 一个原生的 macOS 照片对照工具，用于并排比较富士相机同时输出的 **RAF (RAW)** 与 **HIF (HEIF)** 文件。
 
 ---
@@ -493,3 +496,10 @@ xcrun swiftc -O -swift-version 5 -parse-as-library -plugin-path "$PLUGINS" \
   Tests/E2ETest.swift -o build/e2etest && ./build/e2etest
 ```
 
+## 许可证
+
+[MIT](LICENSE) © 2026 OrangeCh
+
+意思是你可以自由使用、修改、再发布，甚至商用，**唯一的要求是保留版权声明和许可证原文**。软件按「原样」提供，不附带任何担保。
+
+> 补充一句实话：本项目的代码由 AI 生成，而**纯 AI 生成的内容在部分司法辖区可能不受版权保护**（例如美国版权局要求作品有人类作者）。所以这份 MIT 许可证的实际效力，可能比通常情况要弱 —— 但它至少清楚表达了作者的意图：**随便用，不用问**。
