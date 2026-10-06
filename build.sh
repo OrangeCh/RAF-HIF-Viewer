@@ -38,6 +38,21 @@ xcrun swiftc \
   "$ROOT/Sources/"*.swift \
   -o "$BIN"
 
+echo "==> 生成 App 图标"
+ICNS="$ROOT/Resources/AppIcon.icns"
+if [ ! -f "$ICNS" ]; then
+  # 图标是按尺寸生成的产物，没进版本控制；缺了就现场生成
+  PY="$ROOT/../dsh-runtimes/dsh-primary-runtime/dependencies/python/bin/python3"
+  [ -x "$PY" ] || PY=python3
+  "$PY" "$ROOT/Tools/make-app-icon.py"
+fi
+if [ -f "$ICNS" ]; then
+  cp "$ICNS" "$APP/Contents/Resources/AppIcon.icns"
+  echo "    AppIcon.icns"
+else
+  echo "    ⚠️ 没有图标，将使用系统默认图标"
+fi
+
 echo "==> 拷贝本地化资源"
 for lproj in "$ROOT/Resources/"*.lproj; do
   [ -d "$lproj" ] || continue
@@ -68,6 +83,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>LSMinimumSystemVersion</key><string>$TARGET_OS</string>
   <key>LSApplicationCategoryType</key><string>public.app-category.photography</string>
   <key>NSHighResolutionCapable</key><true/>
+  <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>NSPhotoLibraryAddUsageDescription</key><string>把选中的照片加入「照片」App 的图库</string>
   <key>NSPrincipalClass</key><string>NSApplication</string>
   <key>NSSupportsAutomaticGraphicsSwitching</key><true/>

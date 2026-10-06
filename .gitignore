@@ -21,3 +21,8 @@ PROJECT-NOTES.md
 
 # 开发过程中的验证截图（体积大，且对使用者价值不大）
 docs/
+
+# 注意：Resources/AppIcon.icns **要**提交。
+# 生成它需要 Python 的 Pillow，而这不是 macOS 自带的 ——
+# 不提交的话，别人克隆后跑 build.sh 会拿不到图标。
+# 想改图标时再跑 Tools/make-app-icon.py 重新生成。
